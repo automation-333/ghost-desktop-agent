@@ -4,6 +4,10 @@ GHOST is an experimental Windows desktop AI agent designed to understand a user'
 
 The goal is to move beyond fixed macros and predefined scripts toward a general-purpose desktop agent that can understand what the user wants and decide what action should happen next.
 
+<p align="center">
+  <img src="./assets/ghost-ui.webp" alt="GHOST Desktop AI Agent interface" width="1000">
+</p>
+
 ## Core idea
 
 Traditional automation usually follows a predefined sequence of steps.
