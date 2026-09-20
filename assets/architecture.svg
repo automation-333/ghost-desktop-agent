@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360">
+  <rect width="1200" height="360" rx="28" fill="#F7F3ED"/>
+  <text x="60" y="58" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#111111">GHOST agent loop</text>
+  <text x="60" y="88" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#786F66">A dynamic loop that observes, acts, verifies and replans when the environment changes.</text>
+
+  <g font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <rect x="58" y="145" width="170" height="78" rx="18" fill="#FFFFFF" stroke="#D8CEC2"/>
+    <text x="143" y="178" font-size="18" font-weight="700" fill="#111111">USER GOAL</text>
+    <text x="143" y="202" font-size="14" fill="#786F66">Natural language</text>
+
+    <rect x="278" y="145" width="170" height="78" rx="18" fill="#FFFFFF" stroke="#D8CEC2"/>
+    <text x="363" y="178" font-size="18" font-weight="700" fill="#111111">OBSERVE</text>
+    <text x="363" y="202" font-size="14" fill="#786F66">UI + browser state</text>
+
+    <rect x="498" y="145" width="170" height="78" rx="18" fill="#FFFFFF" stroke="#D8CEC2"/>
+    <text x="583" y="178" font-size="18" font-weight="700" fill="#111111">PLAN</text>
+    <text x="583" y="202" font-size="14" fill="#786F66">Choose next action</text>
+
+    <rect x="718" y="145" width="170" height="78" rx="18" fill="#FFFFFF" stroke="#D8CEC2"/>
+    <text x="803" y="178" font-size="18" font-weight="700" fill="#111111">ACT</text>
+    <text x="803" y="202" font-size="14" fill="#786F66">Execute tool</text>
+
+    <rect x="938" y="145" width="204" height="78" rx="18" fill="#111111"/>
+    <text x="1040" y="178" font-size="18" font-weight="700" fill="#FFFFFF">VERIFY</text>
+    <text x="1040" y="202" font-size="14" fill="#DDD5CB">Check result</text>
+  </g>
+
+  <g stroke="#9B9085" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M228 184 H268"/>
+    <path d="M448 184 H488"/>
+    <path d="M668 184 H708"/>
+    <path d="M888 184 H928"/>
+    <path d="M1040 233 C1040 298 583 312 583 235"/>
+  </g>
+  <g fill="#9B9085">
+    <path d="M268 184 l-10 -7 v14 z"/>
+    <path d="M488 184 l-10 -7 v14 z"/>
+    <path d="M708 184 l-10 -7 v14 z"/>
+    <path d="M928 184 l-10 -7 v14 z"/>
+    <path d="M583 235 l-8 11 h16 z"/>
+  </g>
+  <text x="804" y="304" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#786F66">failed / incomplete → recover or replan</text>
+</svg>
