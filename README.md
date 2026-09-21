@@ -1,26 +1,32 @@
 # GHOST Desktop AI Agent
 
-GHOST is an experimental Windows **computer-use agent** designed to understand a user's goal, observe the current state of the computer and perform multi-step actions across desktop applications and the browser.
-
-The project is focused on moving beyond fixed macros and recorded click sequences toward an agent that can decide what to do next, verify the result and adapt when the environment changes.
-
 <p align="center">
   <img src="./assets/ghost-ui.webp" alt="GHOST Desktop AI Agent interface" width="1000">
 </p>
 
-## Core loop
-
-<p align="center">
-  <img src="./assets/architecture.svg" alt="GHOST agent loop architecture" width="1000">
-</p>
+GHOST is a Windows **computer-use agent** built as a personal R&D project around one core idea:
 
 `Observe -> Plan -> Act -> Verify -> Replan`
 
-The agent does not assume that an action succeeded. After meaningful actions it observes the environment again, checks the result and can retry, choose another target or re-plan.
+Instead of replaying fixed macros, the system is designed to interpret a user's goal, inspect the current environment, choose the next action, verify what actually happened and recover when execution does not match the expected result.
 
-## Current status
+## Recruiter quick view
 
-GHOST is an active personal R&D project, not a finished commercial product.
+| | |
+|---|---|
+| **Project type** | Personal R&D / desktop agent |
+| **Platform** | Windows |
+| **Core stack** | C#, .NET, WPF |
+| **Focus** | Agent architecture, desktop/browser automation, semantic UI targeting, verification and recovery |
+| **Interaction model** | Natural-language goals -> structured actions -> execution -> verification |
+| **Current stage** | Working prototype under active development |
+| **Public repository** | Architecture, technical documentation and UI materials |
+
+> The implementation source is not currently published in this repository. This public repository is intended to document the product direction, architecture and engineering decisions without presenting unfinished capabilities as production-ready.
+
+## What is working
+
+GHOST is an active prototype rather than a finished product.
 
 | Area | Status |
 |---|---|
@@ -34,92 +40,110 @@ GHOST is an active personal R&D project, not a finished commercial product.
 | Sensitive-action confirmation | Architecture in progress |
 | Voice interaction | Planned |
 
-The goal of this repository is to show the architecture, engineering approach and development direction without presenting unfinished capabilities as complete.
+The current priority is **reliability of the execution loop**, not adding a large list of hardcoded application demos.
 
 ## Architecture
 
-GHOST is separated into several layers so that reasoning, observation and execution are not tightly coupled.
+<p align="center">
+  <img src="./assets/architecture.svg" alt="GHOST agent architecture" width="1000">
+</p>
 
-### Observation
+A task is handled as a repeated state transition:
 
-The observation layer can collect structured information about the current environment, including:
+```text
+User goal
+   |
+Observe environment
+   |
+Build structured state
+   |
+Plan next action
+   |
+Validate
+   |
+Execute
+   |
+Observe result
+   |
+Verify progress
+   |
+Complete / Recover / Replan
+```
+
+The system is split into layers so reasoning and execution are not tightly coupled.
+
+### 1. Observation
+
+The observation layer builds structured context from the current environment.
+
+Potential signals include:
 
 - active applications and windows
-- browser pages and tabs
 - visible UI elements
 - accessibility information
-- text content
+- browser state
 - focused controls
+- visible text
 - recent actions and results
 
-### Planning
+### 2. Planning
 
-The planner receives:
+The planner reasons from:
 
-- the user's goal
+- the user's requested outcome
 - current environment state
 - available actions
-- execution history
-- previous errors
+- previous execution history
+- previous failures
+- safety constraints
 
-It decides the next action instead of generating one long rigid script in advance.
+The intended output is a structured action rather than unrestricted execution text.
 
-### Action execution
+### 3. Target resolution
 
-The execution layer is built around reusable primitives such as:
+UI targets are resolved semantically where possible.
+
+Preferred order:
+
+1. structured UI match
+2. accessibility role/name
+3. browser DOM or semantic browser data
+4. approximate semantic match
+5. visual target
+6. coordinates as a fallback
+
+This is intended to reduce dependence on fixed screen positions.
+
+### 4. Execution
+
+The executor works with constrained reusable primitives such as:
 
 - launch or focus an application
 - navigate the browser
-- click a UI element
-- type text
-- press keyboard shortcuts
+- click a target
+- enter text
+- use keyboard shortcuts
 - scroll
-- read page content
-- extract information
+- read structured content
 - interact with files
 - wait for state changes
 
-### Semantic target resolution
+### 5. Verification and recovery
 
-Reliable UI targeting is one of the main problems in desktop automation.
+An action being executed is not treated as proof that the task progressed.
 
-The project explores a layered strategy:
+After meaningful actions, GHOST can observe the environment again and compare the result with the expected state.
 
-1. structured UI information
-2. accessibility data
-3. DOM data where available
-4. semantic element matching
-5. visual information
-6. screen coordinates only as a fallback
+Recovery may include:
 
-### Verification and recovery
-
-After an action, GHOST can observe the interface again and compare the resulting state with the expected outcome.
-
-When the result is incomplete or wrong, the system can be designed to:
-
-- retry
-- select another target
-- wait for the interface
-- re-plan
-- request user intervention
-
-## Safety
-
-Computer-use agents can trigger actions with real consequences.
-
-Sensitive actions should be distinguishable from normal navigation and can require explicit confirmation before execution, especially for actions such as:
-
-- sending messages
-- publishing content
-- making purchases
-- deleting data
-- changing security settings
-- other irreversible actions
+- waiting and observing again
+- resolving the target again
+- retrying
+- choosing another action
+- replanning
+- requesting user intervention
 
 ## Technology
-
-Current technology direction:
 
 - C#
 - .NET
@@ -127,34 +151,47 @@ Current technology direction:
 - Windows UI Automation
 - browser automation
 - accessibility APIs
-- LLM integration
+- LLM APIs
 - structured tool execution
 - semantic UI targeting
+- AI-assisted development with Codex
 
-Development uses AI-assisted engineering for architecture exploration, implementation, debugging and testing.
+## Engineering problems explored
 
-## Example task shape
+The project is mainly about solving reliability problems that appear when software has to operate changing interfaces rather than a stable API:
 
-A user could ask the agent to find information in one interface and move the result into another application.
+- translating natural-language intent into constrained actions
+- keeping observation, reasoning and execution separate
+- locating UI elements without relying only on coordinates
+- verifying whether an action produced the expected state
+- recovering from partial or failed execution
+- distinguishing ordinary navigation from sensitive actions
+- keeping execution traces understandable enough to debug
 
-A general agent flow would be:
+## Safety model
 
-1. understand the requested outcome
-2. inspect the current state
-3. locate the required application or page
-4. identify the relevant UI target
-5. perform the next action
-6. observe the result
-7. continue or re-plan
-8. verify completion
+Computer-use agents can trigger actions with real consequences.
 
-The important part is that the workflow is generated from the goal and current state rather than replayed from a recorded macro.
+Higher-risk operations should be distinguishable from ordinary navigation and can require explicit confirmation before execution, especially for actions such as:
 
-## Development focus
+- sending messages
+- publishing content
+- purchases
+- deleting data
+- security or permission changes
+- other irreversible actions
 
-Current work is centered on:
+## Documentation
 
-- reliable environment observation
+For a more implementation-oriented breakdown, see:
+
+**[Architecture notes](./docs/ARCHITECTURE.md)**
+
+## Development direction
+
+Current work is focused on:
+
+- stronger environment observation
 - semantic UI understanding
 - browser and desktop interaction
 - dynamic planning
@@ -162,23 +199,25 @@ Current work is centered on:
 - recovery after failed actions
 - safe handling of sensitive actions
 - reducing dependence on fixed coordinates
+- structured execution logs
 
-## Roadmap
+Planned later:
 
-Planned improvements include:
-
+- persistent task context
+- reusable skills
 - richer browser understanding
 - stronger desktop application support
-- improved semantic element resolution
-- more reliable planning and recovery
-- persistent task context
-- structured skills
 - voice interaction
-- better execution logs
-- expanded verification mechanisms
 
-## Why I'm building it
+## Why this project exists
 
-Many real workflows still require people to move information between websites, desktop applications, CRM systems, spreadsheets and internal tools.
+Traditional automation works well when every step is predictable.
 
-Traditional automation works well when every step is predictable. GHOST explores the harder case: workflows where the environment changes and the system needs to understand context, choose actions dynamically and recover when something unexpected happens.
+GHOST explores the harder case: workflows where the interface changes, context matters, and software has to decide what to do next instead of replaying a recorded sequence.
+
+The goal is not to build a larger macro recorder. The goal is to explore a reliable execution layer for natural-language computer control.
+
+---
+
+**Developer:** [automation-333](https://github.com/automation-333)  
+**Telegram:** [@DMD_user](https://t.me/DMD_user)
